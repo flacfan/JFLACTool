@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact name="Release">
+    <output-path>$PROJECT_DIR$/out/artifacts/JFLACTool</output-path>
+    <root id="root">
+      <element id="directory" name="resources">
+        <element id="dir-copy" path="$PROJECT_DIR$/rc" />
+      </element>
+      <element id="file-copy" path="$PROJECT_DIR$/LICENSE.md" />
+      <element id="file-copy" path="$PROJECT_DIR$/README.md" />
+      <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/JAR/JFLACTool.jar" />
+    </root>
+  </artifact>
+</component>

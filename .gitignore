@@ -1,0 +1,13 @@
+# Binaries
+rc/macOS/
+rc/Windows/
+
+# IDEA
+.idea/workspace.xml
+out/
+
+# Mac
+._*
+.DS_Store
+.Spotlight-V100
+.Trashes

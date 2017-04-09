@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact name="Zipped">
+    <output-path>$PROJECT_DIR$/out/artifacts/Release</output-path>
+    <root id="root">
+      <element id="archive" name="JFLACTool.zip">
+        <element id="directory" name="JFLACTool">
+          <element id="dir-copy" path="$PROJECT_DIR$/out/artifacts/JFLACTool" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
