@@ -32,7 +32,9 @@ public class Settings
     private boolean saveAlbumArtToFolderConvert;
     private boolean embedAlbumArtConvert;
 
+    private String conversionCodec;
     private String lameOptions;
+    private String afconvertOptions;
     private String id3v2TagVersion;
     private String iTunesSearchParameters;
 
@@ -54,7 +56,9 @@ public class Settings
         return saveAlbumArtToFolderConvert; }
     public boolean getEmbedAlbumArtConvert() { return embedAlbumArtConvert; }
 
+    public String getConversionCodec() { return conversionCodec; }
     public String getLAMEOptions() { return lameOptions; }
+    public String getAFConvertOptions() { return afconvertOptions; }
     public String getID3v2TagVersion() { return id3v2TagVersion; }
     public String getiTunesSearchParameters() { return iTunesSearchParameters; }
 
@@ -167,8 +171,12 @@ public class Settings
             settings.put("embed.album.art.convert",
                     properties.getProperty("embed.album.art.convert"));
 
+            settings.put("conversion.codec",
+                    properties.getProperty("conversion.codec"));
             settings.put("lame.options",
                     properties.getProperty("lame.options"));
+            settings.put("afconvert.options",
+                    properties.getProperty("afconvert.options"));
             settings.put("id3v2.tag.version",
                     properties.getProperty("id3v2.tag.version"));
             settings.put("itunes.search.parameters",
@@ -281,7 +289,9 @@ public class Settings
         embedAlbumArtConvert = Boolean.parseBoolean(settings.get(
                 "embed.album.art.convert"));
 
+        conversionCodec = settings.get("conversion.codec");
         lameOptions = settings.get("lame.options");
+        afconvertOptions = settings.get("afconvert.options");
         id3v2TagVersion = settings.get("id3v2.tag.version");
         iTunesSearchParameters = settings.get("itunes.search.parameters");
 
@@ -289,6 +299,12 @@ public class Settings
         {
             showErrorAndExit("Please make sure id3v2.tag.version is set "
                     + "to either 2.3 or 2.4 in Settings.properties.");
+        }
+
+        if (!conversionCodec.equals("mp3") && !conversionCodec.equals("aac"))
+        {
+            showErrorAndExit("Please make sure afconvert.options is set "
+                    + "to either mp3 or aac in Settings.properties.");
         }
     }
 

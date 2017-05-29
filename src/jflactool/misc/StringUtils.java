@@ -9,7 +9,7 @@ public class StringUtils
                 .replace("/", ",")
                 .replace(":", ";")
                 .replace("*", "x")
-                .replace("?", "\u0000")
+                .replace("?", "")
                 .replace("<", "[")
                 .replace(">", "]")
                 .replace("|", "!");

@@ -19,6 +19,7 @@ import jflactool.gui.album_art.artwork.AlbumArtModel;
 import jflactool.gui.tags.TagsPanel;
 import jflactool.gui.tags.fields.TagsModel;
 import jflactool.misc.MusicFile;
+import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.CannotWriteException;
@@ -29,6 +30,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.KeyNotFoundException;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
+import org.jaudiotagger.tag.mp4.Mp4Tag;
 
 public class ConvertButtonController
 {
@@ -149,19 +151,40 @@ public class ConvertButtonController
             CountDownLatch countDownLatch = new CountDownLatch(
                     tagsModel.numberOfSelectedFiles());
 
-            tagsModel.getMusicFiles().stream()
-                    .filter(musicFile -> musicFile.getSelected())
-                    .forEach(musicFile -> executorService.submit(() ->
-                    {
-                        decodeFLACFile(musicFile);
-                        encodeWAVFile(musicFile);
-                        deleteWAVFile(musicFile);
-                        tagMP3File(musicFile);
-                        moveMP3File(musicFile);
+            if (settings.getConversionCodec().equals("aac") &&
+                    settings.getRunningOnMac())
+            {
+                tagsModel.getMusicFiles().stream()
+                        .filter(musicFile -> musicFile.getSelected())
+                        .forEach(musicFile -> executorService.submit(() ->
+                                {
+                                    decodeFLACFile(musicFile);
+                                    encodeWAVFileToM4A(musicFile);
+                                    deleteWAVFile(musicFile);
+                                    tagM4AFile(musicFile);
+                                    moveM4AFile(musicFile);
 
-                        countDownLatch.countDown();
-                    }
-            ));
+                                    countDownLatch.countDown();
+                                }
+                        ));
+            }
+
+            else
+            {
+                tagsModel.getMusicFiles().stream()
+                        .filter(musicFile -> musicFile.getSelected())
+                        .forEach(musicFile -> executorService.submit(() ->
+                                {
+                                    decodeFLACFile(musicFile);
+                                    encodeWAVFileToMP3(musicFile);
+                                    deleteWAVFile(musicFile);
+                                    tagMP3File(musicFile);
+                                    moveMP3File(musicFile);
+
+                                    countDownLatch.countDown();
+                                }
+                        ));
+            }
 
             executorService.shutdown();
 
@@ -184,12 +207,23 @@ public class ConvertButtonController
             catch (IOException | InterruptedException ex){}
         }
 
-        private void encodeWAVFile(MusicFile musicFile)
+        private void encodeWAVFileToMP3(MusicFile musicFile)
         {
             try
             {
                 Runtime.getRuntime().exec(
                         convertModel.makeLAMECommand(musicFile)).waitFor();
+            }
+
+            catch (IOException | InterruptedException ex){}
+        }
+
+        private void encodeWAVFileToM4A(MusicFile musicFile)
+        {
+            try
+            {
+                Runtime.getRuntime().exec(
+                        convertModel.makeAFConvertCommand(musicFile)).waitFor();
             }
 
             catch (IOException | InterruptedException ex){}
@@ -224,12 +258,43 @@ public class ConvertButtonController
                     ReadOnlyFileException | InvalidAudioFrameException ex){}
         }
 
+        private void tagM4AFile(MusicFile musicFile)
+        {
+            try
+            {
+                Mp4Tag m4aTag = convertModel.createM4ATag();
+                m4aTag.setField(FieldKey.TRACK, musicFile.getTrackNumber());
+                m4aTag.setField(FieldKey.TITLE, musicFile.getTitle());
+
+                AudioFile m4aFile = AudioFileIO.read(
+                        musicFile.getTemporaryM4APath().toFile());
+                m4aFile.setTag(m4aTag);
+                m4aFile.commit();
+            }
+
+            catch (CannotWriteException | KeyNotFoundException |
+                    CannotReadException | IOException | TagException |
+                    ReadOnlyFileException | InvalidAudioFrameException ex){}
+        }
+
         private void moveMP3File(MusicFile musicFile)
         {
             try
             {
                 Files.move(musicFile.getTemporaryMP3Path(),
                         musicFile.getDestinationMP3Path(),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            catch (IOException ex){}
+        }
+
+        private void moveM4AFile(MusicFile musicFile)
+        {
+            try
+            {
+                Files.move(musicFile.getTemporaryM4APath(),
+                        musicFile.getDestinationM4APath(),
                         StandardCopyOption.REPLACE_EXISTING);
             }
 

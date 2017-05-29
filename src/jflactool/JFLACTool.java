@@ -35,6 +35,7 @@ public class JFLACTool
         {
             Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
             TagOptionSingleton.getInstance().setWriteMp3GenresAsText(true);
+            TagOptionSingleton.getInstance().setWriteMp4GenresAsText(true);
 
             Settings settings = new Settings();
 

@@ -10,6 +10,8 @@ public class MusicFile
     private Path temporaryWAVPath;
     private Path temporaryMP3Path;
     private Path destinationMP3Path;
+    private Path temporaryM4APath;
+    private Path destinationM4APath;
     private String artist;
     private String album;
     private String year;
@@ -25,6 +27,8 @@ public class MusicFile
     public Path getTemporaryWAVPath() { return temporaryWAVPath; }
     public Path getTemporaryMP3Path() { return temporaryMP3Path; }
     public Path getDestinationMP3Path() { return destinationMP3Path; }
+    public Path getTemporaryM4APath() { return temporaryM4APath; }
+    public Path getDestinationM4APath() { return destinationM4APath; }
     public String getArtist() { return artist; }
     public String getAlbum() { return album; }
     public String getYear() { return year; }
@@ -60,6 +64,16 @@ public class MusicFile
     public void setDestinationMP3Path(Path destinationMP3Path)
     {
         this.destinationMP3Path = destinationMP3Path;
+    }
+
+    public void setTemporaryM4APath(Path temporaryM4APath)
+    {
+        this.temporaryM4APath = temporaryM4APath;
+    }
+
+    public void setDestinationM4APath(Path destinationM4APath)
+    {
+        this.destinationM4APath = destinationM4APath;
     }
 
     public void setArtist(String artist)

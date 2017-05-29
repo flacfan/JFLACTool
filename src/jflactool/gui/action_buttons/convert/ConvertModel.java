@@ -15,6 +15,7 @@ import org.jaudiotagger.tag.id3.ID3v23Tag;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.jaudiotagger.tag.id3.valuepair.ImageFormats;
 import org.jaudiotagger.tag.images.StandardArtwork;
+import org.jaudiotagger.tag.mp4.Mp4Tag;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
 public class ConvertModel
@@ -25,6 +26,7 @@ public class ConvertModel
 
     private String[] baseSoXCommand;
     private String[] baseLAMECommand;
+    private String[] baseAFConvertCommand;
 
     private Path albumArtPath;
     private Path convertPath;
@@ -40,6 +42,7 @@ public class ConvertModel
         this.albumArtModel = albumArtModel;
         makeBaseSoXCommand();
         makeBaseLAMECommand();
+        makeBaseAFConvertCommand();
     }
 
     private void makeBaseSoXCommand()
@@ -64,6 +67,22 @@ public class ConvertModel
         }
     }
 
+    private void makeBaseAFConvertCommand()
+    {
+        String[] options = settings.getAFConvertOptions().split(" ");
+        baseAFConvertCommand = new String[1 + options.length];
+
+        baseAFConvertCommand[0] = "/usr/bin/afconvert";
+
+        int i = 1;
+
+        for (String flag : options)
+        {
+            baseAFConvertCommand[i] = flag;
+            i++;
+        }
+    }
+
     public String[] makeSoXCommand(MusicFile musicFile)
     {
         String[] command = Arrays.copyOf(baseSoXCommand,
@@ -80,6 +99,17 @@ public class ConvertModel
         command[command.length - 2] = musicFile.getTemporaryWAVPath()
                 .toString();
         command[command.length - 1] = musicFile.getTemporaryMP3Path()
+                .toString();
+        return command;
+    }
+
+    public String[] makeAFConvertCommand(MusicFile musicFile)
+    {
+        String[] command = Arrays.copyOf(baseAFConvertCommand,
+                baseAFConvertCommand.length + 2);
+        command[command.length - 2] = musicFile.getTemporaryWAVPath()
+                .toString();
+        command[command.length - 1] = musicFile.getTemporaryM4APath()
                 .toString();
         return command;
     }
@@ -133,6 +163,45 @@ public class ConvertModel
         return id3v2Tag;
     }
 
+    public Mp4Tag createM4ATag()
+    {
+        Mp4Tag m4aTag = new Mp4Tag();
+
+        try
+        {
+            m4aTag.setField(FieldKey.ARTIST, tagsModel.getArtist());
+            m4aTag.setField(FieldKey.ALBUM, tagsModel.getAlbum());
+            m4aTag.setField(FieldKey.YEAR, tagsModel.getYear());
+
+            if (!tagsModel.getGenre().isEmpty())
+            {
+                m4aTag.setField(FieldKey.GENRE, tagsModel.getGenre());
+            }
+
+            if (settings.getEmbedAlbumArtConvert() &&
+                    albumArtModel.getCurrentSmallAlbumArtBytes() != null)
+            {
+                StandardArtwork standardArtwork = new StandardArtwork();
+                standardArtwork.setBinaryData(
+                        albumArtModel.getCurrentSmallAlbumArtBytes());
+                standardArtwork.setMimeType(
+                        ImageFormats.getMimeTypeForBinarySignature(
+                                standardArtwork.getBinaryData()));
+                standardArtwork.setDescription("Front Cover");
+                standardArtwork.setPictureType(PictureTypes.DEFAULT_ID);
+                standardArtwork.setWidth(new ImageIcon(
+                        standardArtwork.getBinaryData()).getIconWidth());
+                standardArtwork.setHeight(new ImageIcon(
+                        standardArtwork.getBinaryData()).getIconHeight());
+                m4aTag.setField(standardArtwork);
+            }
+        }
+
+        catch (FieldDataInvalidException ex){}
+
+        return m4aTag;
+    }
+
     public void updateModel()
     {
         determineConvertPath();
@@ -164,6 +233,10 @@ public class ConvertModel
                     musicFile.getUUID() + ".mp3"));
             musicFile.setDestinationMP3Path(convertPath.resolve(
                     musicFile.getFileName() + ".mp3"));
+            musicFile.setTemporaryM4APath(settings.getWorkingPath().resolve(
+                    musicFile.getUUID() + ".m4a"));
+            musicFile.setDestinationM4APath(convertPath.resolve(
+                    musicFile.getFileName() + ".m4a"));
         });
     }
 }

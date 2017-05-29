@@ -14,7 +14,8 @@ Features
     * Tag FLAC files using the information you enter into JFLACTool.
     * Store archived FLAC files with high resolution album art from iTunes.
 * Convert
-    * Quickly load FLAC files, correct tags, select album art, then convert to MP3.
+    * Quickly load FLAC files, correct tags, select album art, then convert to MP3 or AAC (.m4a).
+    * Note: Converting to AAC (.m4a) is only supported on macOS.
 
 Setup
 -----
@@ -46,7 +47,7 @@ Usage
 5. Process FLAC files.
     * Generate spectrograms.
     * Archive FLAC.
-    * Convert FLAC to MP3.
+    * Convert FLAC to MP3 or AAC (.m4a).
 
 ##### iTunes Album Art Tip
 
@@ -57,7 +58,7 @@ Libraries
 
 The source code for each library can be found inside the lib/src folder in the code repository.
 
-* [JAudioTagger](https://bitbucket.org/ijabz/jaudiotagger) for reading/writing FLAC Vorbis comments and MP3 ID3 tags.
+* [JAudioTagger](https://bitbucket.org/ijabz/jaudiotagger) for reading/writing FLAC Vorbis comments, MP3 ID3 tags, and AAC (.m4a) MP4 tags.
 * [JSON-java](https://github.com/stleary/JSON-java) for parsing JSON from the iTunes Search API.
 * [JustFLAC](https://github.com/drogatkin/JustFLAC) for playing FLAC files using Java.
 
